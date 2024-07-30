@@ -1,0 +1,21 @@
+{
+  "name": "order-management-app",
+  "version": "1.0.0",
+  "description": "App to create orders",
+  "main": "src/index.js",
+  "scripts": {
+    "tunnel": "make tunnel",
+    "start": "concurrently \"npm:start-approuter\" \"npm:watch-srv\" \"npm:tunnel\"",
+    "start-local": "concurrently \"npm:start-approuter\" \"npm:watch-srv --local\" \"npm:tunnel\"",
+    "start-approuter": "npm run start --prefix approuter",
+    "watch-srv": "PORT=5001 npm run watch --prefix srv",
+    "build": "mbt build -t gen --mtar mta.tar",
+    "deploy": "cf deploy gen/mta.tar"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,10 @@
+**/node_modules
+.DS_Store
+**/.DS_Store
+default-env-srv.json
+default-env-web.json
+**/default-env.json
+**/dist
+**/mta_archives
+**/coverage
+.idea

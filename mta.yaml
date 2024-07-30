@@ -1,0 +1,76 @@
+ID: order-management-app
+_schema-version: "1.0"
+version: 1.0.0
+parameters:
+  enable-parallel-deployments: true
+
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm install
+modules:
+  - name: order-management-app-server
+    type: nodejs
+    path: srv
+    build-parameters:
+      builder: grunt
+      timeout: 7m
+      ignore:
+        - "default-*.json"
+        - .env
+        - "*node_modules*"
+        - package-lock.json
+    provides:
+      - name: order-management-api
+        properties:
+          url: ${default-url}
+    requires:
+      - name: order-management-app-uaa
+      - name: order-management-app-connectivity
+      - name: order-management-app-destination
+
+  - name: order-management-app-approuter
+    type: approuter.nodejs
+    path: approuter
+    build-parameters:
+      ignore:
+        - "default-*.json"
+        - .env
+        - "*node_modules*"
+        - package-lock.json
+    parameters:
+      memory: 256M
+      disk-quota: 1024M
+      keep-existing-routes: true
+    requires:
+      - name: order-management-api
+        group: destinations
+        properties:
+          name: order-management-api # must be used in xs-app.json as well
+          url: ~{url}
+          forwardAuthToken: true
+      - name: order-management-app-uaa
+
+resources:
+  - name: order-management-app-uaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-name: order-management-app-uaa
+      service-plan: application
+      path: ./xs-security.json
+
+  - name: order-management-app-connectivity
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: connectivity
+      service-name: order-management-app-connectivity
+      service-plan: lite
+
+  - name: order-management-app-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-name: order-management-app-destination
+      service-plan: lite

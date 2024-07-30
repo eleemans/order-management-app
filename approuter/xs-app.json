@@ -1,0 +1,11 @@
+{
+  "authenticationMethod": "route",
+  "sessionTimeout": 60,
+  "routes": [
+    {
+      "source": "^/(.*)$",
+      "target": "$1",
+      "destination": "order-management-api"
+    }
+  ]
+}
